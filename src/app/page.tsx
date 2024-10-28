@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 
 type Theme = 'light' | 'dark'
@@ -11,21 +11,23 @@ export default function Home() {
   const [theme, setTheme] = useState<Theme | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  const getTheme = () => {
-    console.log('getTheme')
-    console.log(iframeRef.current)
-    console.log(iframeRef.current?.contentWindow?.postMessage({ type: 'getTheme' }, '*'))
-    const theme = iframeRef.current?.contentWindow?.postMessage({ type: 'getTheme' }, '*')
-
-    console.log('theme')
-    console.log(theme)
-    setTheme(theme || "light")
+  const getIframeTheme = () => {
+    iframeRef.current?.contentWindow?.postMessage({ type: 'getTheme' }, '*')
   }
 
   const updateTheme = (newTheme: 'light' | 'dark') => {
     iframeRef.current?.contentWindow?.postMessage({ type: 'updateTheme', data: newTheme }, '*')
     setTheme(newTheme)
   }
+
+  useEffect(() => {
+    window.addEventListener('message', (event) => {
+      const { type, data } = event.data
+      if (type === 'theme') {
+        setTheme(data || 'light')
+      }
+    })
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -35,7 +37,7 @@ export default function Home() {
         </h1>
 
         <div>
-          <button onClick={() => getTheme()}>Get Theme</button>
+          <button onClick={() => getIframeTheme()}>Get Theme</button>
           <button onClick={() => updateTheme('light')}>Set Light</button>
           <button onClick={() => updateTheme('dark')}>Set Dark</button>
         </div>
@@ -43,6 +45,7 @@ export default function Home() {
         <iframe
           ref={iframeRef}
           src={iframeUrl}
+          style={{ display: 'none' }}
         ></iframe>
       </main>
     </div>
