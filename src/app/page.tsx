@@ -45,7 +45,6 @@ export default function Home() {
         <iframe
           ref={iframeRef}
           src={iframeUrl}
-          style={{ display: 'none' }}
         ></iframe>
       </main>
     </div>
