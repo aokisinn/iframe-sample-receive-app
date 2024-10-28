@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 
 type Theme = 'light' | 'dark'
 
-const iframeUrl = 'https://iframe-sample-send-fhdkoj22j-aokisinns-projects.vercel.app/'
+const iframeUrl = 'https://iframe-sample-send-app.vercel.app/'
 
 export default function Home() {
   const [theme, setTheme] = useState<Theme | null>(null)
@@ -13,6 +13,7 @@ export default function Home() {
 
   const getTheme = () => {
     console.log('getTheme')
+    console.log(iframeRef.current)
     console.log(iframeRef.current?.contentWindow?.postMessage({ type: 'getTheme' }, '*'))
     const theme = iframeRef.current?.contentWindow?.postMessage({ type: 'getTheme' }, '*')
 
@@ -42,7 +43,6 @@ export default function Home() {
         <iframe
           ref={iframeRef}
           src={iframeUrl}
-
         ></iframe>
       </main>
     </div>
